@@ -1,0 +1,14 @@
+.DS_Store
+
+# Build outputs
+/bin/
+/dist/
+
+# Local generated relay configs
+typhoon-xray-config.json
+*.local.json
+
+# Environment files
+.env
+.env.*
+!.env.example

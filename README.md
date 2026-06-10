@@ -1,0 +1,56 @@
+# Typhoon
+
+Typhoon is a Snowflake-like volunteer relay network for helping users reach blocked public websites and apps through temporary volunteers outside China.
+
+The MVP is deliberately narrow:
+
+- Volunteers run a desktop command-line app.
+- Volunteers must expose a publicly reachable port.
+- Volunteers act as direct exit nodes.
+- The broker is a control plane only and does not proxy user traffic.
+- China mobile clients proxy all device traffic through VPN mode.
+- Relay transport uses Xray-core's VLESS + Reality + Vision support.
+
+Future versions should add dedicated exit servers so volunteers can choose to act as entry relays instead of direct exits.
+
+## Repository Layout
+
+```text
+cmd/broker/          Broker HTTP API.
+cmd/volunteer/       Volunteer CLI for Xray-backed relay registration.
+docs/                Architecture, API, mobile, and rollout notes.
+internal/broker/     Broker store and HTTP handlers.
+internal/relay/      Shared relay descriptor models.
+internal/volunteer/  Xray config generation helpers.
+```
+
+## Quick Start
+
+Start the broker:
+
+```sh
+go run ./cmd/broker -addr :8080
+```
+
+Run a volunteer relay:
+
+```sh
+go run ./cmd/volunteer \
+  -broker http://localhost:8080 \
+  -public-host volunteer.example.com \
+  -public-port 443 \
+  -listen-port 443 \
+  -xray /path/to/xray
+```
+
+The volunteer command expects an `xray` binary that supports `xray x25519` and `xray run -config`.
+
+List client relay candidates:
+
+```sh
+curl http://localhost:8080/api/v1/relays
+```
+
+## MVP Warning
+
+In the MVP, volunteers are direct exits. Their public IP can appear to destination websites and apps. That is simple and useful for early testing, but it creates real legal, abuse, and privacy risk for volunteers. The first public rollout should add abuse controls, rate limits, exit policy controls, and preferably dedicated exit servers.
