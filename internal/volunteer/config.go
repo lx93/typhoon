@@ -133,8 +133,8 @@ func GenerateRealityKeyPair(xrayPath string) (RealityKeyPair, error) {
 }
 
 func ParseRealityKeyPair(out []byte) (RealityKeyPair, error) {
-	privateRe := regexp.MustCompile(`(?i)Private key:\s*([A-Za-z0-9_-]+)`)
-	publicRe := regexp.MustCompile(`(?i)Public key:\s*([A-Za-z0-9_-]+)`)
+	privateRe := regexp.MustCompile(`(?im)^\s*Private\s*Key:\s*([A-Za-z0-9_-]+)\s*$`)
+	publicRe := regexp.MustCompile(`(?im)^\s*(?:Public\s*Key|Password\s*\(PublicKey\)):\s*([A-Za-z0-9_-]+)\s*$`)
 
 	privateMatch := privateRe.FindSubmatch(out)
 	publicMatch := publicRe.FindSubmatch(out)

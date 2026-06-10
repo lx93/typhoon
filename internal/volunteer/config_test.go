@@ -36,6 +36,16 @@ func TestParseRealityKeyPair(t *testing.T) {
 	}
 }
 
+func TestParseRealityKeyPairCurrentXrayOutput(t *testing.T) {
+	keyPair, err := ParseRealityKeyPair([]byte("PrivateKey: abc_123\nPassword (PublicKey): def-456\nHash32: ignored\n"))
+	if err != nil {
+		t.Fatalf("parse key pair: %v", err)
+	}
+	if keyPair.PrivateKey != "abc_123" || keyPair.PublicKey != "def-456" {
+		t.Fatalf("unexpected key pair: %+v", keyPair)
+	}
+}
+
 func TestGenerateUUID(t *testing.T) {
 	id, err := GenerateUUID()
 	if err != nil {
