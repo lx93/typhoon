@@ -2,6 +2,10 @@
 
 The mobile client should proxy all device traffic through VPN mode.
 
+Typhoon's mobile direction is hybrid: native VPN tunnels for the traffic path,
+with a React Native control shell as a later cross-platform layer after the
+native iOS and Android tunnels are proven.
+
 ## Android
 
 Use `VpnService` to create a TUN interface. A userspace network bridge then forwards traffic from the TUN interface into the VLESS Reality client engine.
@@ -21,6 +25,10 @@ Likely implementation choices:
 - `NEPacketTunnelProvider` for VPN lifecycle.
 - A userspace bridge from packet tunnel flow to the VLESS Reality client engine.
 - An Xray-compatible client core packaged in a way App Store distribution can support.
+
+The initial iOS scaffold lives in `ios/`. It includes a SwiftUI host app, a
+Packet Tunnel extension, broker relay selection in `TyphoonKit`, and a
+Libbox-backed sing-box adapter for the embedded VLESS Reality Vision core.
 
 ## Relay Selection
 

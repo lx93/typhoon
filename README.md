@@ -19,6 +19,7 @@ Future versions should add dedicated exit servers so volunteers can choose to ac
 cmd/broker/          Broker HTTP API.
 cmd/volunteer/       Volunteer CLI for Xray-backed relay registration.
 docs/                Architecture, API, mobile, and rollout notes.
+ios/                 iOS VPN client scaffold and shared Swift package.
 internal/broker/     Broker store and HTTP handlers.
 internal/relay/      Shared relay descriptor models.
 internal/volunteer/  Xray config generation helpers.

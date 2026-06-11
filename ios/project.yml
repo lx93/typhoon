@@ -1,0 +1,42 @@
+name: Typhoon
+options:
+  bundleIdPrefix: com.typhoon
+  deploymentTarget:
+    iOS: "16.0"
+packages:
+  TyphoonKit:
+    path: TyphoonKit
+targets:
+  TyphoonClient:
+    type: application
+    platform: iOS
+    sources:
+      - TyphoonClient/App
+      - TyphoonClient/Shared
+    dependencies:
+      - target: PacketTunnel
+      - package: TyphoonKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.typhoon.client
+        INFOPLIST_FILE: TyphoonClient/App/Info.plist
+        CODE_SIGN_ENTITLEMENTS: TyphoonClient/App/TyphoonClient.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  PacketTunnel:
+    type: app-extension
+    platform: iOS
+    sources:
+      - TyphoonClient/PacketTunnel
+      - TyphoonClient/Shared
+    dependencies:
+      - package: TyphoonKit
+      - framework: ThirdParty/Libbox.xcframework
+        embed: false
+      - sdk: UIKit.framework
+      - sdk: libresolv.tbd
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.typhoon.client.PacketTunnel
+        INFOPLIST_FILE: TyphoonClient/PacketTunnel/Info.plist
+        CODE_SIGN_ENTITLEMENTS: TyphoonClient/PacketTunnel/PacketTunnel.entitlements
+        APPLICATION_EXTENSION_API_ONLY: YES
