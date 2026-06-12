@@ -54,6 +54,11 @@ final class RelaySelectorTests: XCTestCase {
         XCTAssertTrue(json.contains("\"fingerprint\" : \"chrome\""))
         XCTAssertTrue(json.contains("\"auto_route\" : true"))
         XCTAssertTrue(json.contains("\"strict_route\" : true"))
+        XCTAssertTrue(json.contains("\"default_domain_resolver\" : \"dns-0\""))
+        XCTAssertTrue(json.contains("\"protocol\" : \"dns\""))
+        XCTAssertTrue(json.contains("\"action\" : \"hijack-dns\""))
+        XCTAssertTrue(json.contains("\"type\" : \"tcp\""))
+        XCTAssertTrue(json.contains("\"detour\" : \"proxy\""))
     }
 
     private func relay(

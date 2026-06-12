@@ -42,7 +42,7 @@ public struct SingBoxConfiguration: Equatable, Sendable {
                 "servers": dnsServers.enumerated().map { index, server in
                     [
                         "tag": "dns-\(index)",
-                        "type": "udp",
+                        "type": "tcp",
                         "server": server,
                         "detour": "proxy"
                     ]
@@ -100,6 +100,13 @@ public struct SingBoxConfiguration: Equatable, Sendable {
             ],
             "route": [
                 "auto_detect_interface": true,
+                "default_domain_resolver": "dns-0",
+                "rules": [
+                    [
+                        "protocol": "dns",
+                        "action": "hijack-dns"
+                    ]
+                ],
                 "final": "proxy"
             ]
         ]
