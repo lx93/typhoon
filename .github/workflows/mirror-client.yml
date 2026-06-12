@@ -25,6 +25,17 @@ jobs:
         with:
           path: typhoon
 
+      - name: Verify mirror push token is configured
+        env:
+          TYPHOON_CLIENT_PUSH_TOKEN: ${{ secrets.TYPHOON_CLIENT_PUSH_TOKEN }}
+        run: |
+          if [ -z "$TYPHOON_CLIENT_PUSH_TOKEN" ]; then
+            echo "TYPHOON_CLIENT_PUSH_TOKEN is not configured."
+            echo "Create a fine-grained token with write access to lx93/typhoon-client,"
+            echo "then add it as an Actions secret on lx93/typhoon."
+            exit 1
+          fi
+
       - name: Check out generated client repo
         uses: actions/checkout@v4
         with:
