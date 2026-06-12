@@ -1,0 +1,67 @@
+name: Mirror desktop client
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - cmd/client/**
+      - internal/client/**
+      - internal/relay/types.go
+      - docs/desktop-client.md
+      - scripts/mirror-client.sh
+      - .github/workflows/mirror-client.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Typhoon monorepo
+        uses: actions/checkout@v4
+        with:
+          path: typhoon
+
+      - name: Check out generated client repo
+        uses: actions/checkout@v4
+        with:
+          repository: lx93/typhoon-client
+          token: ${{ secrets.TYPHOON_CLIENT_PUSH_TOKEN }}
+          path: typhoon-client
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: typhoon/go.mod
+
+      - name: Regenerate client repo
+        run: ./typhoon/scripts/mirror-client.sh ./generated-client
+
+      - name: Replace generated client contents
+        run: |
+          find ./typhoon-client -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -R ./generated-client/. ./typhoon-client/
+
+      - name: Test generated client
+        working-directory: typhoon-client
+        run: go test ./...
+
+      - name: Commit and push mirror update
+        working-directory: typhoon-client
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          git add -A
+
+          if git diff --cached --quiet --exit-code; then
+            echo "No mirror changes to publish."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Mirror desktop client from typhoon@${SOURCE_SHA}"
+          git push
