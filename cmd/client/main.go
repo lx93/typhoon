@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"typhoon/internal/client"
@@ -116,8 +117,9 @@ func runConnect(args []string) error {
 }
 
 type commonConfig struct {
-	BrokerURL string
-	Limit     int
+	BrokerURL  string
+	Limit      int
+	DNSServers []string
 }
 
 func parseCommonFlags(name string, args []string) (commonConfig, error) {
@@ -133,6 +135,10 @@ func parseCommonFlags(name string, args []string) (commonConfig, error) {
 func addCommonFlags(fs *flag.FlagSet, cfg *commonConfig) {
 	fs.StringVar(&cfg.BrokerURL, "broker", "http://localhost:8080", "broker base URL")
 	fs.IntVar(&cfg.Limit, "limit", 5, "relay candidate limit")
+	fs.Func("dns", "DNS server for sing-box to query through the proxy; repeat or comma-separate values", func(value string) error {
+		cfg.DNSServers = append(cfg.DNSServers, splitCSV(value)...)
+		return nil
+	})
 }
 
 func fetchSelectedRelay(ctx context.Context, cfg commonConfig) (relay.Descriptor, []byte, error) {
@@ -150,11 +156,26 @@ func fetchSelectedRelay(ctx context.Context, cfg commonConfig) (relay.Descriptor
 		return relay.Descriptor{}, nil, err
 	}
 
-	configJSON, err := client.BuildSingBoxConfig(client.SingBoxConfigInput{Relay: selected})
+	configJSON, err := client.BuildSingBoxConfig(client.SingBoxConfigInput{
+		Relay:      selected,
+		DNSServers: cfg.DNSServers,
+	})
 	if err != nil {
 		return relay.Descriptor{}, nil, err
 	}
 	return selected, configJSON, nil
+}
+
+func splitCSV(value string) []string {
+	fields := strings.Split(value, ",")
+	out := make([]string, 0, len(fields))
+	for _, field := range fields {
+		field = strings.TrimSpace(field)
+		if field != "" {
+			out = append(out, field)
+		}
+	}
+	return out
 }
 
 func writeConnectConfig(configOut string, configJSON []byte) (string, func(), error) {
