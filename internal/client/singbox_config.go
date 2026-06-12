@@ -59,6 +59,7 @@ func BuildSingBoxConfig(input SingBoxConfigInput) ([]byte, error) {
 				"auto_route":               true,
 				"strict_route":             true,
 				"stack":                    "system",
+				"dns_mode":                 "hijack",
 				"endpoint_independent_nat": true,
 			},
 		},

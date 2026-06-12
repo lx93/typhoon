@@ -13,7 +13,8 @@ can be reused by Linux and Windows clients later.
 
 - A running Typhoon broker.
 - At least one registered volunteer relay.
-- A local `sing-box` binary.
+- A local `sing-box` binary. Use sing-box 1.14 or newer so the generated TUN
+  config can install native DNS settings for the tunnel.
 - macOS privileges for TUN routing. In practice, run `connect` with `sudo`.
 
 Install sing-box with Homebrew if needed:
@@ -49,6 +50,8 @@ The generated config uses:
 - `tun` inbound.
 - `auto_route: true`.
 - `strict_route: true`.
+- `dns_mode: hijack`, so sing-box installs tunnel DNS settings and intercepts
+  port 53 DNS requests.
 - DNS servers detoured through the proxy.
 - VLESS Reality Vision outbound from the selected relay descriptor.
 - Route final set to the proxy outbound.

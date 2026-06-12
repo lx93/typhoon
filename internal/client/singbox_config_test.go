@@ -23,8 +23,8 @@ func TestBuildSingBoxConfig(t *testing.T) {
 	if tun["type"] != "tun" || tun["auto_route"] != true || tun["strict_route"] != true {
 		t.Fatalf("unexpected tun inbound: %+v", tun)
 	}
-	if _, ok := tun["dns_mode"]; ok {
-		t.Fatalf("dns_mode requires sing-box 1.14+, but desktop MVP targets 1.13.x: %+v", tun)
+	if tun["dns_mode"] != "hijack" {
+		t.Fatalf("expected TUN DNS hijack mode, got %+v", tun["dns_mode"])
 	}
 
 	outbounds := decoded["outbounds"].([]any)
