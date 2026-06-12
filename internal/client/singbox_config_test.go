@@ -45,10 +45,22 @@ func TestBuildSingBoxConfig(t *testing.T) {
 	}
 
 	route := decoded["route"].(map[string]any)
+	rules := route["rules"].([]any)
+	dnsRule := rules[0].(map[string]any)
+	if dnsRule["protocol"] != "dns" || dnsRule["action"] != "hijack-dns" {
+		t.Fatalf("expected DNS hijack rule, got %+v", dnsRule)
+	}
 	if route["final"] != "proxy" {
 		t.Fatalf("expected proxy final route, got %+v", route["final"])
 	}
 	if route["default_domain_resolver"] != "dns-0" {
 		t.Fatalf("expected dns-0 default domain resolver, got %+v", route["default_domain_resolver"])
+	}
+
+	dns := decoded["dns"].(map[string]any)
+	servers := dns["servers"].([]any)
+	dns0 := servers[0].(map[string]any)
+	if dns0["type"] != "tcp" || dns0["detour"] != "proxy" {
+		t.Fatalf("expected TCP DNS through proxy, got %+v", dns0)
 	}
 }

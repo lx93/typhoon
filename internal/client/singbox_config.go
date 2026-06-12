@@ -98,6 +98,12 @@ func BuildSingBoxConfig(input SingBoxConfigInput) ([]byte, error) {
 		"route": map[string]any{
 			"auto_detect_interface":   true,
 			"default_domain_resolver": "dns-0",
+			"rules": []any{
+				map[string]any{
+					"protocol": "dns",
+					"action":   "hijack-dns",
+				},
+			},
 			"final":                   "proxy",
 		},
 	}
@@ -110,7 +116,7 @@ func dnsServerObjects(servers []string) []any {
 	for i, server := range servers {
 		out = append(out, map[string]any{
 			"tag":    fmt.Sprintf("dns-%d", i),
-			"type":   "udp",
+			"type":   "tcp",
 			"server": server,
 			"detour": "proxy",
 		})
