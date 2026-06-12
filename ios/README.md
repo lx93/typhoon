@@ -92,6 +92,8 @@ If a physical iPhone shows `NEConfigurationErrorDomain Code=11`, check that both
 - App Group matching `group.com.typhoon.client`.
 - Bundle identifiers matching `com.typhoon.client` and `com.typhoon.client.PacketTunnel`, or update `AppConfig.packetTunnelBundleIdentifier` if you change them.
 
+When testing from Xcode, the console may also show LaunchServices warnings such as `process may not map database`. The current generated Libbox framework links some Chromium/iOS symbols that can trigger those warnings inside an app extension. Treat them as diagnostic noise unless the app also reports that the VPN failed. The useful tunnel milestones are logged under the `com.typhoon.client.PacketTunnel` subsystem.
+
 ## Broker and relay flow
 
 The Packet Tunnel extension reads the broker URL from `NETunnelProviderProtocol.providerConfiguration`, calls:
@@ -116,6 +118,7 @@ The adapter:
 
 - Generates VLESS Reality Vision client JSON from `SingBoxConfiguration`.
 - Lets libbox install and own the packet tunnel network settings.
+- Uses a local TCP command-server port instead of libbox's default Unix socket, because iOS extension container paths are too long for `command.sock`.
 - Returns the packet tunnel file descriptor to libbox.
 - Stops the service cleanly when the VPN disconnects.
 - Returns startup errors so the provider can try the next relay or fail closed.

@@ -1,4 +1,4 @@
-.PHONY: test fmt broker volunteer
+.PHONY: test fmt broker volunteer client
 
 fmt:
 	gofmt -w cmd internal
@@ -19,3 +19,6 @@ volunteer:
 		-reality-public-key dev-public-key \
 		-short-id 5f7a8d9c01ab23cd \
 		-skip-xray-run
+
+client:
+	go run ./cmd/client check -broker http://localhost:8080

@@ -5,5 +5,5 @@ enum AppConfig {
     static let appGroupIdentifier = "group.com.typhoon.client"
     static let packetTunnelBundleIdentifier = "com.typhoon.client.PacketTunnel"
     static let providerBrokerURLKey = "broker_url"
-    static let defaultBrokerURL = URL(string: "http://127.0.0.1:8080")!
+    static let defaultBrokerURL = URL(string: "http://54.238.185.205:8080/")!
 }

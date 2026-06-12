@@ -22,6 +22,8 @@ final class LibboxPacketTunnelPlatformInterface: NSObject, LibboxPlatformInterfa
     }
 
     private func openTunAsync(_ options: LibboxTunOptionsProtocol?, _ ret0_: UnsafeMutablePointer<Int32>?) async throws {
+        TunnelDiagnostics.recordEvent("libbox requested TUN open")
+        logger.info("libbox requested TUN open")
         guard let options else {
             throw PacketTunnelProxyEngineError.engineStartFailed("Missing libbox TUN options.")
         }
@@ -31,9 +33,13 @@ final class LibboxPacketTunnelPlatformInterface: NSObject, LibboxPlatformInterfa
 
         let settings = try makeNetworkSettings(options)
         networkSettings = settings
+        TunnelDiagnostics.recordEvent("Applying packet tunnel network settings")
+        logger.info("Applying packet tunnel network settings")
         try await tunnelProvider.setTunnelNetworkSettings(settings)
 
         if let tunFd = tunnelProvider.packetFlow.value(forKeyPath: "socket.fileDescriptor") as? Int32 {
+            TunnelDiagnostics.recordEvent("Resolved packet tunnel file descriptor via packetFlow")
+            logger.info("Resolved packet tunnel file descriptor via packetFlow")
             ret0_.pointee = tunFd
             return
         }
@@ -43,6 +49,8 @@ final class LibboxPacketTunnelPlatformInterface: NSObject, LibboxPlatformInterfa
             throw PacketTunnelProxyEngineError.engineStartFailed("Unable to resolve packet tunnel file descriptor.")
         }
 
+        TunnelDiagnostics.recordEvent("Resolved packet tunnel file descriptor via libbox fallback")
+        logger.info("Resolved packet tunnel file descriptor via libbox fallback")
         ret0_.pointee = fallbackFd
     }
 

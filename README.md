@@ -52,6 +52,14 @@ List client relay candidates:
 curl http://localhost:8080/api/v1/relays
 ```
 
+Run the desktop CLI client relay check:
+
+```sh
+go run ./cmd/client check -broker http://localhost:8080
+```
+
+For the macOS full-device routing MVP, see `docs/desktop-client.md`.
+
 ## MVP Warning
 
 In the MVP, volunteers are direct exits. Their public IP can appear to destination websites and apps. That is simple and useful for early testing, but it creates real legal, abuse, and privacy risk for volunteers. The first public rollout should add abuse controls, rate limits, exit policy controls, and preferably dedicated exit servers.

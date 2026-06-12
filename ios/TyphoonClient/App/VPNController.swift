@@ -56,6 +56,7 @@ final class VPNController: ObservableObject {
         do {
             guard Self.canUseNetworkExtensionPreferences else {
                 status = .invalid
+                refreshTunnelDiagnostics()
                 return
             }
 
@@ -78,6 +79,7 @@ final class VPNController: ObservableObject {
                 throw VPNControllerError.networkExtensionUnavailableInSimulator
             }
 
+            TunnelDiagnostics.clear()
             let manager = try await loadOrCreateManager()
             try await configure(manager: manager, brokerURL: brokerURL)
             try manager.connection.startVPNTunnel()
@@ -143,6 +145,16 @@ final class VPNController: ObservableObject {
 
     private func refreshStatus() {
         status = manager?.connection.status ?? .invalid
+        refreshTunnelDiagnostics()
+    }
+
+    private func refreshTunnelDiagnostics() {
+        guard status == .disconnected || status == .invalid else {
+            return
+        }
+        if let summary = TunnelDiagnostics.latestSummary() {
+            lastError = "Tunnel diagnostics: \(summary)"
+        }
     }
 
     private static var canUseNetworkExtensionPreferences: Bool {

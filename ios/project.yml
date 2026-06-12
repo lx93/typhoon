@@ -6,6 +6,15 @@ options:
 packages:
   TyphoonKit:
     path: TyphoonKit
+schemes:
+  TyphoonClient:
+    build:
+      targets:
+        TyphoonClient: all
+    run:
+      config: Debug
+    archive:
+      config: Release
 targets:
   TyphoonClient:
     type: application

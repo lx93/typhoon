@@ -1,0 +1,534 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05DF38A1F0AE829429FFA02F /* LibboxPacketTunnelPlatformInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AB7D8F218C531FC15CD2D6 /* LibboxPacketTunnelPlatformInterface.swift */; };
+		08C9B2F4EE7FE0281C8F19DA /* Libbox.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC528F3D6FA2BE369EB9F9E9 /* Libbox.xcframework */; };
+		41E4B5399E25324092B88815 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97E89586F2F2B66EBDD4C0B /* PacketTunnelProvider.swift */; };
+		4CBEC08949B863344E7F9E40 /* TyphoonClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1B34153940B0FF7633ECC4 /* TyphoonClientApp.swift */; };
+		54C38833594C1FE17DE78C90 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB35E271864206BDBACE331 /* UIKit.framework */; };
+		5CE204FDAED883C5873CB634 /* TyphoonKit in Frameworks */ = {isa = PBXBuildFile; productRef = E27283969881BDD5694FF0D1 /* TyphoonKit */; };
+		7A8C2B0B24E09B07FDD20076 /* PacketTunnelProxyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79141937A1C1A59C1718959 /* PacketTunnelProxyEngine.swift */; };
+		A38D0A04F78A78422E33E424 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E65782DD3712192CBF55A93 /* AppConfig.swift */; };
+		C07105691B0DF08AAF16479D /* PacketTunnel.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6C10549D8265A3DD23F268E5 /* PacketTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CABC6B624DFCB6C6E32E4319 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E65782DD3712192CBF55A93 /* AppConfig.swift */; };
+		D5ED82BFCD1AD6D94DAB788F /* TyphoonKit in Frameworks */ = {isa = PBXBuildFile; productRef = 74D85653D122D8E784935429 /* TyphoonKit */; };
+		DBC648D582CDCDB81D59D0A9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3ECD39CF8C3D43B88B0342 /* ContentView.swift */; };
+		EF8FA2F5151C1D0CBF7C5BB3 /* VPNController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40BDCE4DF1E7B90E9860E18 /* VPNController.swift */; };
+		F909C24D423CB47EA63EB32E /* EngineDirectories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9E180E5092A17C1C9B1455 /* EngineDirectories.swift */; };
+		FCE5EC9C7974E4E6BF0CBB70 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E063B4436B029DF6714A1418 /* libresolv.tbd */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9D89D6F5C74FEA07641CC6C2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D9A6FA8EC6D2C5782E106B1D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D1C8E504F3102CB59637F67F;
+			remoteInfo = PacketTunnel;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1097AE0EF280AF0B72D3C5ED /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C07105691B0DF08AAF16479D /* PacketTunnel.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		10AB7D8F218C531FC15CD2D6 /* LibboxPacketTunnelPlatformInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibboxPacketTunnelPlatformInterface.swift; sourceTree = "<group>"; };
+		2E65782DD3712192CBF55A93 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		610F3CE8644D233DE35C94B1 /* TyphoonClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TyphoonClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		647703B61DCDC9E85EFDEB9A /* PacketTunnel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PacketTunnel.entitlements; sourceTree = "<group>"; };
+		6C10549D8265A3DD23F268E5 /* PacketTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PacketTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		6C1B34153940B0FF7633ECC4 /* TyphoonClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TyphoonClientApp.swift; sourceTree = "<group>"; };
+		6C3ECD39CF8C3D43B88B0342 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		70FC4A298129581B7EC25FA4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7B9E180E5092A17C1C9B1455 /* EngineDirectories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineDirectories.swift; sourceTree = "<group>"; };
+		7DB35E271864206BDBACE331 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A1C38ED6E2389C49A1F2CC12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A79141937A1C1A59C1718959 /* PacketTunnelProxyEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProxyEngine.swift; sourceTree = "<group>"; };
+		C40BDCE4DF1E7B90E9860E18 /* VPNController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNController.swift; sourceTree = "<group>"; };
+		DE3A4F3F220C569441A954CD /* TyphoonKit */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TyphoonKit; sourceTree = SOURCE_ROOT; };
+		E063B4436B029DF6714A1418 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		E97E89586F2F2B66EBDD4C0B /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
+		EB32F04153724AB6CEACDC17 /* TyphoonClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TyphoonClient.entitlements; sourceTree = "<group>"; };
+		EC528F3D6FA2BE369EB9F9E9 /* Libbox.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Libbox.xcframework; path = ThirdParty/Libbox.xcframework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0108C138B2B96B952CB3DD10 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5ED82BFCD1AD6D94DAB788F /* TyphoonKit in Frameworks */,
+				08C9B2F4EE7FE0281C8F19DA /* Libbox.xcframework in Frameworks */,
+				54C38833594C1FE17DE78C90 /* UIKit.framework in Frameworks */,
+				FCE5EC9C7974E4E6BF0CBB70 /* libresolv.tbd in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96958536D4DFFF73FF8919A3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5CE204FDAED883C5873CB634 /* TyphoonKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00998027C1428864071817CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6C10549D8265A3DD23F268E5 /* PacketTunnel.appex */,
+				610F3CE8644D233DE35C94B1 /* TyphoonClient.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0242B56B07BC5930B4A2D058 = {
+			isa = PBXGroup;
+			children = (
+				79B8B690BEB88B14EC07F23A /* App */,
+				7888D81846FD5858B1FB9343 /* Packages */,
+				806EBCB28A83FB1543DCFD9D /* PacketTunnel */,
+				EAD98F4B4303B687E3A3F86F /* Shared */,
+				A888D3C9A5016965B0429C07 /* Frameworks */,
+				00998027C1428864071817CC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7888D81846FD5858B1FB9343 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				DE3A4F3F220C569441A954CD /* TyphoonKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		79B8B690BEB88B14EC07F23A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				6C3ECD39CF8C3D43B88B0342 /* ContentView.swift */,
+				70FC4A298129581B7EC25FA4 /* Info.plist */,
+				EB32F04153724AB6CEACDC17 /* TyphoonClient.entitlements */,
+				6C1B34153940B0FF7633ECC4 /* TyphoonClientApp.swift */,
+				C40BDCE4DF1E7B90E9860E18 /* VPNController.swift */,
+			);
+			name = App;
+			path = TyphoonClient/App;
+			sourceTree = "<group>";
+		};
+		806EBCB28A83FB1543DCFD9D /* PacketTunnel */ = {
+			isa = PBXGroup;
+			children = (
+				7B9E180E5092A17C1C9B1455 /* EngineDirectories.swift */,
+				A1C38ED6E2389C49A1F2CC12 /* Info.plist */,
+				10AB7D8F218C531FC15CD2D6 /* LibboxPacketTunnelPlatformInterface.swift */,
+				647703B61DCDC9E85EFDEB9A /* PacketTunnel.entitlements */,
+				E97E89586F2F2B66EBDD4C0B /* PacketTunnelProvider.swift */,
+				A79141937A1C1A59C1718959 /* PacketTunnelProxyEngine.swift */,
+			);
+			name = PacketTunnel;
+			path = TyphoonClient/PacketTunnel;
+			sourceTree = "<group>";
+		};
+		A888D3C9A5016965B0429C07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EC528F3D6FA2BE369EB9F9E9 /* Libbox.xcframework */,
+				E063B4436B029DF6714A1418 /* libresolv.tbd */,
+				7DB35E271864206BDBACE331 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EAD98F4B4303B687E3A3F86F /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				2E65782DD3712192CBF55A93 /* AppConfig.swift */,
+			);
+			name = Shared;
+			path = TyphoonClient/Shared;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D1C8E504F3102CB59637F67F /* PacketTunnel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5EB7EB939DABFE49B5109C69 /* Build configuration list for PBXNativeTarget "PacketTunnel" */;
+			buildPhases = (
+				F97C2B65DC555B5C9D65FD91 /* Sources */,
+				0108C138B2B96B952CB3DD10 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PacketTunnel;
+			packageProductDependencies = (
+				74D85653D122D8E784935429 /* TyphoonKit */,
+			);
+			productName = PacketTunnel;
+			productReference = 6C10549D8265A3DD23F268E5 /* PacketTunnel.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		F485C8E62EFF424DC2E04EE8 /* TyphoonClient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF9823BEA7725E6CFC7A6435 /* Build configuration list for PBXNativeTarget "TyphoonClient" */;
+			buildPhases = (
+				109697A79D6AE82E33F59FE1 /* Sources */,
+				96958536D4DFFF73FF8919A3 /* Frameworks */,
+				1097AE0EF280AF0B72D3C5ED /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4CEDC216494FF0727B52F570 /* PBXTargetDependency */,
+			);
+			name = TyphoonClient;
+			packageProductDependencies = (
+				E27283969881BDD5694FF0D1 /* TyphoonKit */,
+			);
+			productName = TyphoonClient;
+			productReference = 610F3CE8644D233DE35C94B1 /* TyphoonClient.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D9A6FA8EC6D2C5782E106B1D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 5C5C1529F08225C09F628FE7 /* Build configuration list for PBXProject "Typhoon" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 0242B56B07BC5930B4A2D058;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				699B9EAEEFAAF10113D0100C /* XCLocalSwiftPackageReference "TyphoonKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 00998027C1428864071817CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D1C8E504F3102CB59637F67F /* PacketTunnel */,
+				F485C8E62EFF424DC2E04EE8 /* TyphoonClient */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		109697A79D6AE82E33F59FE1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CABC6B624DFCB6C6E32E4319 /* AppConfig.swift in Sources */,
+				DBC648D582CDCDB81D59D0A9 /* ContentView.swift in Sources */,
+				4CBEC08949B863344E7F9E40 /* TyphoonClientApp.swift in Sources */,
+				EF8FA2F5151C1D0CBF7C5BB3 /* VPNController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F97C2B65DC555B5C9D65FD91 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A38D0A04F78A78422E33E424 /* AppConfig.swift in Sources */,
+				F909C24D423CB47EA63EB32E /* EngineDirectories.swift in Sources */,
+				05DF38A1F0AE829429FFA02F /* LibboxPacketTunnelPlatformInterface.swift in Sources */,
+				41E4B5399E25324092B88815 /* PacketTunnelProvider.swift in Sources */,
+				7A8C2B0B24E09B07FDD20076 /* PacketTunnelProxyEngine.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4CEDC216494FF0727B52F570 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D1C8E504F3102CB59637F67F /* PacketTunnel */;
+			targetProxy = 9D89D6F5C74FEA07641CC6C2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		5E6A0B8DE072FF3E84D5185F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		76ABE2836CF34FB466335CC9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TyphoonClient/App/TyphoonClient.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9VLV9A7KS9;
+				INFOPLIST_FILE = TyphoonClient/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.typhoon.client;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		771294517513B8315C9EE181 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = TyphoonClient/PacketTunnel/PacketTunnel.entitlements;
+				DEVELOPMENT_TEAM = 9VLV9A7KS9;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"ThirdParty\"",
+				);
+				INFOPLIST_FILE = TyphoonClient/PacketTunnel/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.typhoon.client.PacketTunnel;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7F1EF5E9A842CDC8B5139DA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TyphoonClient/App/TyphoonClient.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9VLV9A7KS9;
+				INFOPLIST_FILE = TyphoonClient/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.typhoon.client;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8FD27E1FC901E76B700A9657 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = TyphoonClient/PacketTunnel/PacketTunnel.entitlements;
+				DEVELOPMENT_TEAM = 9VLV9A7KS9;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"ThirdParty\"",
+				);
+				INFOPLIST_FILE = TyphoonClient/PacketTunnel/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.typhoon.client.PacketTunnel;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9DAF13DCCA247A4A6EB3334C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5C5C1529F08225C09F628FE7 /* Build configuration list for PBXProject "Typhoon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9DAF13DCCA247A4A6EB3334C /* Debug */,
+				5E6A0B8DE072FF3E84D5185F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5EB7EB939DABFE49B5109C69 /* Build configuration list for PBXNativeTarget "PacketTunnel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8FD27E1FC901E76B700A9657 /* Debug */,
+				771294517513B8315C9EE181 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EF9823BEA7725E6CFC7A6435 /* Build configuration list for PBXNativeTarget "TyphoonClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76ABE2836CF34FB466335CC9 /* Debug */,
+				7F1EF5E9A842CDC8B5139DA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		699B9EAEEFAAF10113D0100C /* XCLocalSwiftPackageReference "TyphoonKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = TyphoonKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		74D85653D122D8E784935429 /* TyphoonKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TyphoonKit;
+		};
+		E27283969881BDD5694FF0D1 /* TyphoonKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TyphoonKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D9A6FA8EC6D2C5782E106B1D /* Project object */;
+}

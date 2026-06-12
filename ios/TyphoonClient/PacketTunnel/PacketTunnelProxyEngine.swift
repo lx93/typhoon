@@ -23,6 +23,8 @@ final class EmbeddedProxyEngine: PacketTunnelProxyEngine {
 
         let configuration = try SingBoxConfiguration(relay: relay).encodedJSONString()
         let directories = try EngineDirectories.make()
+        TunnelDiagnostics.recordEvent("Generated sing-box config and engine directories")
+        logger.info("Generated sing-box config and engine directories")
 
         let setupOptions = LibboxSetupOptions()
         setupOptions.basePath = directories.base.path
@@ -31,14 +33,17 @@ final class EmbeddedProxyEngine: PacketTunnelProxyEngine {
         setupOptions.logMaxLines = 3000
         setupOptions.debug = true
         setupOptions.crashReportSource = "TyphoonPacketTunnel"
-        setupOptions.oomKillerEnabled = true
+        setupOptions.oomKillerEnabled = false
+        setupOptions.oomKillerDisabled = true
+        setupOptions.commandServerListenPort = try availableCommandServerPort()
 
+        TunnelDiagnostics.recordEvent("Setting up libbox")
+        logger.info("Setting up libbox")
         var setupError: NSError?
         LibboxSetup(setupOptions, &setupError)
         if let setupError {
             throw PacketTunnelProxyEngineError.engineStartFailed(setupError.localizedDescription)
         }
-        LibboxPromoteOOMDraft()
 
         let platformInterface = LibboxPacketTunnelPlatformInterface(tunnelProvider: tunnelProvider)
         var commandServerError: NSError?
@@ -47,7 +52,11 @@ final class EmbeddedProxyEngine: PacketTunnelProxyEngine {
         }
 
         do {
+            TunnelDiagnostics.recordEvent("Starting libbox command server")
+            logger.info("Starting libbox command server")
             try commandServer.start()
+            TunnelDiagnostics.recordEvent("Starting libbox service")
+            logger.info("Starting libbox service")
             try commandServer.startOrReloadService(configuration, options: LibboxOverrideOptions())
         } catch {
             commandServer.close()
@@ -66,6 +75,17 @@ final class EmbeddedProxyEngine: PacketTunnelProxyEngine {
         commandServer = nil
         platformInterface = nil
         activeRelay = nil
+    }
+
+    private func availableCommandServerPort() throws -> Int32 {
+        var port: Int32 = 0
+        var error: NSError?
+        guard LibboxAvailablePort(19090, &port, &error) else {
+            throw PacketTunnelProxyEngineError.engineStartFailed(error?.localizedDescription ?? "Unable to allocate libbox command server port.")
+        }
+        TunnelDiagnostics.recordEvent("Using libbox command server port \(port)")
+        logger.info("Using libbox command server port \(port, privacy: .public)")
+        return port
     }
 }
 
