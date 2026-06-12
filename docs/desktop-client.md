@@ -71,33 +71,6 @@ sing-box run -c <generated-config>
 Press `Ctrl-C` to stop. The client forwards the interrupt to sing-box and removes
 the temporary config file.
 
-## DNS Troubleshooting
-
-If a raw IP address works through the tunnel but hostnames do not resolve, keep
-the generated config on disk and force public DNS resolvers through the proxy:
-
-```sh
-sudo go run ./cmd/client connect \
-  -broker http://localhost:8080 \
-  -sing-box /opt/homebrew/bin/sing-box \
-  -dns 1.1.1.1,8.8.8.8 \
-  -config-out typhoon-sing-box-debug.json
-```
-
-Then confirm the saved config contains:
-
-- DNS servers with `type: tcp`.
-- DNS servers with `detour: proxy`.
-- A route rule with `protocol: dns` and `action: hijack-dns`.
-- `default_domain_resolver: dns-0`.
-
-After connecting, test name resolution with:
-
-```sh
-nslookup facebook.com
-curl -I https://facebook.com
-```
-
 ## Reuse Notes
 
 Linux should be able to reuse most of the Go code directly. Windows should reuse
