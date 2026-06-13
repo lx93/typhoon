@@ -7,7 +7,7 @@ on:
     paths:
       - cmd/client/**
       - internal/client/**
-      - internal/relay/types.go
+      - internal/relay/**
       - docs/desktop-client.md
       - scripts/mirror-client.sh
       - .github/workflows/mirror-client.yml

@@ -25,7 +25,7 @@ mkdir -p \
 
 cp "$repo_root/cmd/client/main.go" "$out_dir/cmd/typhoon-client/main.go"
 cp "$repo_root/internal/client/"*.go "$out_dir/client/"
-cp "$repo_root/internal/relay/types.go" "$out_dir/relay/types.go"
+cp "$repo_root/internal/relay/"*.go "$out_dir/relay/"
 
 cat > "$out_dir/go.mod" <<EOF
 module $module_path
