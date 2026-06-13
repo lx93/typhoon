@@ -7,7 +7,6 @@ import (
 
 func TestBuildXrayConfig(t *testing.T) {
 	cfg, err := BuildXrayConfig(XrayConfigInput{
-		ListenHost:        "0.0.0.0",
 		ListenPort:        443,
 		ClientID:          "2c08df10-4ef4-4ab9-95c6-cb1e94cdb2ff",
 		Flow:              "xtls-rprx-vision",
@@ -23,6 +22,12 @@ func TestBuildXrayConfig(t *testing.T) {
 	var decoded map[string]any
 	if err := json.Unmarshal(cfg, &decoded); err != nil {
 		t.Fatalf("config should be valid JSON: %v", err)
+	}
+
+	inbounds := decoded["inbounds"].([]any)
+	inbound := inbounds[0].(map[string]any)
+	if inbound["listen"] != "::" {
+		t.Fatalf("expected default listen host ::, got %v", inbound["listen"])
 	}
 }
 

@@ -30,7 +30,7 @@ type RealityKeyPair struct {
 
 func BuildXrayConfig(input XrayConfigInput) ([]byte, error) {
 	if input.ListenHost == "" {
-		input.ListenHost = "0.0.0.0"
+		input.ListenHost = "::"
 	}
 	if input.ListenPort < 1 || input.ListenPort > 65535 {
 		return nil, errors.New("listen port must be between 1 and 65535")

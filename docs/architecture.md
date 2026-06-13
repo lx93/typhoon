@@ -6,7 +6,7 @@ Typhoon provides temporary volunteer relays outside China so mobile clients insi
 
 The MVP optimizes for learning:
 
-- Require each volunteer to expose a public reachable TCP port.
+- Require each volunteer to expose a public reachable TCP port, preferring broker-advertised IPv6 endpoints when available.
 - Use Xray-core for VLESS + Reality + Vision transport.
 - Keep the broker out of the data path.
 - Let the mobile client route all device traffic through a VPN tunnel.
@@ -29,11 +29,11 @@ The broker does:
 - Accept volunteer registration.
 - Track volunteer heartbeats.
 - Expire stale volunteers.
-- Return a small candidate set to clients.
+- Return a small candidate set to clients, prioritizing IPv6 literal endpoints before IPv4 literal endpoints.
 
 ### Volunteer CLI
 
-The volunteer CLI runs on desktop systems. For MVP it starts an Xray-core inbound listener and registers the relay with the broker.
+The volunteer CLI runs on desktop systems. For MVP it starts an Xray-core inbound listener and registers the relay with the broker. It defaults to an IPv6 listener and auto-advertises the first global IPv6 address it can find unless the operator supplies `-public-host`.
 
 The CLI produces an Xray server config with:
 
@@ -101,7 +101,7 @@ The current scaffold advertises one generated VLESS client ID per volunteer proc
 
 ## Open Design Decisions
 
-- Public reachability probing: the broker should eventually verify the advertised endpoint from outside the volunteer network.
+- Public reachability probing: the broker should eventually verify the advertised endpoint from outside the volunteer network, especially for IPv6 hosts where residential firewalls may block inbound connections even without CGNAT.
 - Relay selection: start simple, then add health score, capacity, country, latency, and reputation.
 - Abuse controls: add per-relay limits, destination policy, reporting, and blocklists before public rollout.
 - Mobile engine: choose whether to embed a maintained Xray-compatible engine or call into a separate core.

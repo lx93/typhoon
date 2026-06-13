@@ -28,7 +28,7 @@ Request:
 
 ```json
 {
-  "public_host": "volunteer.example.com",
+  "public_host": "2001:db8::1",
   "public_port": 443,
   "protocol": "vless-reality-vision",
   "client_id": "2c08df10-4ef4-4ab9-95c6-cb1e94cdb2ff",
@@ -48,7 +48,7 @@ Response:
 ```json
 {
   "id": "relay_...",
-  "public_host": "volunteer.example.com",
+  "public_host": "2001:db8::1",
   "public_port": 443,
   "protocol": "vless-reality-vision",
   "client_id": "2c08df10-4ef4-4ab9-95c6-cb1e94cdb2ff",
@@ -97,7 +97,7 @@ Response:
   "relays": [
     {
       "id": "relay_...",
-      "public_host": "volunteer.example.com",
+      "public_host": "2001:db8::1",
       "public_port": 443,
       "protocol": "vless-reality-vision",
       "client_id": "2c08df10-4ef4-4ab9-95c6-cb1e94cdb2ff",

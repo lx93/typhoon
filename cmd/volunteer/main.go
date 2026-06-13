@@ -27,9 +27,9 @@ func main() {
 	flag.StringVar(&cfg.BrokerURL, "broker", "http://localhost:8080", "broker base URL")
 	flag.StringVar(&cfg.RegistrationToken, "registration-token", os.Getenv("TYPHOON_VOLUNTEER_TOKEN"), "volunteer registration token")
 	flag.StringVar(&cfg.XrayPath, "xray", "xray", "path to xray binary")
-	flag.StringVar(&cfg.ListenHost, "listen-host", "0.0.0.0", "local listen host")
+	flag.StringVar(&cfg.ListenHost, "listen-host", "::", "local listen host")
 	flag.IntVar(&cfg.ListenPort, "listen-port", 443, "local listen port")
-	flag.StringVar(&cfg.PublicHost, "public-host", "", "public hostname or IP clients can reach")
+	flag.StringVar(&cfg.PublicHost, "public-host", "", "public hostname or IP clients can reach; defaults to this machine's first global IPv6 address")
 	flag.IntVar(&cfg.PublicPort, "public-port", 443, "public port clients can reach")
 	flag.StringVar(&cfg.ServerName, "server-name", "www.microsoft.com", "Reality server name")
 	flag.StringVar(&cfg.RealityDest, "reality-dest", "www.microsoft.com:443", "Reality dest")
@@ -45,6 +45,10 @@ func main() {
 	flag.BoolVar(&cfg.SkipXrayRun, "skip-xray-run", false, "register and heartbeat without launching xray")
 	flag.Parse()
 
+	if err := cfg.ApplyDefaults(); err != nil {
+		slog.Error("invalid volunteer config", "error", err)
+		os.Exit(2)
+	}
 	if err := cfg.Validate(); err != nil {
 		slog.Error("invalid volunteer config", "error", err)
 		os.Exit(2)
@@ -76,6 +80,18 @@ type cliConfig struct {
 	ConfigOut         string
 	PrintConfigOnly   bool
 	SkipXrayRun       bool
+}
+
+func (c *cliConfig) ApplyDefaults() error {
+	if c.PublicHost != "" || c.PrintConfigOnly {
+		return nil
+	}
+	publicIPv6, err := volunteer.DefaultPublicIPv6Address()
+	if err != nil {
+		return fmt.Errorf("public-host is required when no global IPv6 address can be auto-detected: %w", err)
+	}
+	c.PublicHost = publicIPv6
+	return nil
 }
 
 func (c cliConfig) Validate() error {

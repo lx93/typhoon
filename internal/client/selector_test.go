@@ -67,6 +67,28 @@ func TestIsUsableRelayRequiresDirectVLESSRealityVision(t *testing.T) {
 	}
 }
 
+func TestSelectRelayPrefersIPv6Relay(t *testing.T) {
+	now := time.Date(2026, 6, 11, 12, 0, 0, 0, time.UTC)
+	ipv4 := validRelay(now)
+	ipv4.ID = "ipv4"
+	ipv4.PublicHost = "203.0.113.10"
+
+	ipv6 := validRelay(now)
+	ipv6.ID = "ipv6"
+	ipv6.PublicHost = "2001:db8::443"
+
+	selected, err := SelectRelay(relay.ListResponse{
+		ServerTime: now,
+		Relays:     []relay.Descriptor{ipv4, ipv6},
+	})
+	if err != nil {
+		t.Fatalf("select relay: %v", err)
+	}
+	if selected.ID != "ipv6" {
+		t.Fatalf("expected ipv6 relay, got %q", selected.ID)
+	}
+}
+
 func validRelay(now time.Time) relay.Descriptor {
 	return relay.Descriptor{
 		ID:               "relay_123",

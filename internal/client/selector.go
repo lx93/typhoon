@@ -15,10 +15,22 @@ func SelectRelay(resp relay.ListResponse) (relay.Descriptor, error) {
 		now = time.Now()
 	}
 
+	var fallback relay.Descriptor
+	hasFallback := false
 	for _, candidate := range resp.Relays {
-		if IsUsableRelay(candidate, now) {
+		if !IsUsableRelay(candidate, now) {
+			continue
+		}
+		if relay.IsIPv6Host(candidate.PublicHost) {
 			return candidate, nil
 		}
+		if !hasFallback {
+			fallback = candidate
+			hasFallback = true
+		}
+	}
+	if hasFallback {
+		return fallback, nil
 	}
 	return relay.Descriptor{}, ErrNoUsableRelay
 }

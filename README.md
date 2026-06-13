@@ -5,7 +5,7 @@ Typhoon is a Snowflake-like volunteer relay network for helping users reach bloc
 The MVP is deliberately narrow:
 
 - Volunteers run a desktop command-line app.
-- Volunteers must expose a publicly reachable port.
+- Volunteers must expose a publicly reachable port, with IPv6 preferred when available.
 - Volunteers act as direct exit nodes.
 - The broker is a control plane only and does not proxy user traffic.
 - China mobile clients proxy all device traffic through VPN mode.
@@ -38,11 +38,12 @@ Run a volunteer relay:
 ```sh
 go run ./cmd/volunteer \
   -broker http://localhost:8080 \
-  -public-host volunteer.example.com \
   -public-port 443 \
   -listen-port 443 \
   -xray /path/to/xray
 ```
+
+By default, the volunteer listens on IPv6 (`::`) and advertises the first global IPv6 address it can find. Pass `-public-host` and, if needed, `-listen-host` when using a DNS name, IPv4 address, or manually chosen IPv6 address. A global IPv6 address still needs inbound firewall/router rules that allow clients to reach the volunteer port.
 
 The volunteer command expects an `xray` binary that supports `xray x25519` and `xray run -config`.
 

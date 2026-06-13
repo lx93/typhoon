@@ -84,6 +84,11 @@ func (s *Store) List(now time.Time, limit int) []relay.Descriptor {
 	}
 
 	sort.Slice(relays, func(i, j int) bool {
+		iIPv6 := relay.IsIPv6Host(relays[i].PublicHost)
+		jIPv6 := relay.IsIPv6Host(relays[j].PublicHost)
+		if iIPv6 != jIPv6 {
+			return iIPv6
+		}
 		return relays[i].LastHeartbeatAt.After(relays[j].LastHeartbeatAt)
 	})
 

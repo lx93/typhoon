@@ -29,6 +29,42 @@ final class RelaySelectorTests: XCTestCase {
         XCTAssertNil(RelaySelector().selectFirstUsable(from: [wrongProtocol], now: now))
     }
 
+    func testPrefersIPv6Relay() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let ipv4 = relay(
+            id: "ipv4",
+            publicHost: "203.0.113.10",
+            expiresAt: now.addingTimeInterval(60)
+        )
+        let ipv6 = relay(
+            id: "ipv6",
+            publicHost: "2001:db8::443",
+            expiresAt: now.addingTimeInterval(60)
+        )
+
+        let selected = RelaySelector().selectFirstUsable(from: [ipv4, ipv6], now: now)
+
+        XCTAssertEqual(selected?.id, "ipv6")
+    }
+
+    func testKeepsOriginalOrderWithinSameAddressFamily() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let first = relay(
+            id: "first",
+            publicHost: "203.0.113.10",
+            expiresAt: now.addingTimeInterval(60)
+        )
+        let second = relay(
+            id: "second",
+            publicHost: "198.51.100.10",
+            expiresAt: now.addingTimeInterval(60)
+        )
+
+        let ordered = RelaySelector().orderedCandidates(from: [first, second], now: now)
+
+        XCTAssertEqual(ordered.map(\.id), ["first", "second"])
+    }
+
     func testBuildsProxyEngineConfigFromRelayDescriptor() throws {
         let descriptor = relay(id: "relay-1")
         let config = ProxyEngineConfiguration(relay: descriptor)
@@ -63,6 +99,7 @@ final class RelaySelectorTests: XCTestCase {
 
     private func relay(
         id: String,
+        publicHost: String = "volunteer.example.com",
         relayProtocol: String = RelayConstants.protocolVLESSRealityVision,
         flow: String = RelayConstants.flowVision,
         exitMode: String = RelayConstants.exitModeDirect,
@@ -70,7 +107,7 @@ final class RelaySelectorTests: XCTestCase {
     ) -> RelayDescriptor {
         RelayDescriptor(
             id: id,
-            publicHost: "volunteer.example.com",
+            publicHost: publicHost,
             publicPort: 443,
             relayProtocol: relayProtocol,
             clientID: "2c08df10-4ef4-4ab9-95c6-cb1e94cdb2ff",
