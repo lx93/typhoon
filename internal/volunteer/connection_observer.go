@@ -45,32 +45,75 @@ func (o *ConnectionObserver) Start(ctx context.Context) (<-chan error, error) {
 	if o.Output == nil {
 		o.Output = io.Discard
 	}
-	listener, err := net.Listen(tcpNetworkForHost(o.ListenHost), net.JoinHostPort(o.ListenHost, strconv.Itoa(o.ListenPort)))
-	if err != nil {
-		return nil, err
+	hosts := listenHostsForHost(o.ListenHost)
+	listeners := make([]net.Listener, 0, len(hosts))
+	for _, host := range hosts {
+		listener, err := net.Listen(tcpNetworkForHost(host), net.JoinHostPort(host, strconv.Itoa(o.ListenPort)))
+		if err != nil {
+			for _, openListener := range listeners {
+				_ = openListener.Close()
+			}
+			return nil, err
+		}
+		listeners = append(listeners, listener)
 	}
 
 	errCh := make(chan error, 1)
 	go func() {
 		<-ctx.Done()
-		_ = listener.Close()
-	}()
-	go func() {
-		defer close(errCh)
-		for {
-			conn, err := listener.Accept()
-			if err != nil {
-				if ctx.Err() != nil {
-					return
-				}
-				errCh <- err
-				return
-			}
-			go o.handle(ctx, conn)
+		for _, listener := range listeners {
+			_ = listener.Close()
 		}
+	}()
+	var wg sync.WaitGroup
+	wg.Add(len(listeners))
+	for _, listener := range listeners {
+		go func(listener net.Listener) {
+			defer wg.Done()
+			o.serve(ctx, listener, errCh)
+		}(listener)
+	}
+	go func() {
+		wg.Wait()
+		close(errCh)
 	}()
 
 	return errCh, nil
+}
+
+func (o *ConnectionObserver) serve(ctx context.Context, listener net.Listener, errCh chan<- error) {
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			if ctx.Err() != nil {
+				return
+			}
+			select {
+			case errCh <- err:
+			default:
+			}
+			return
+		}
+		go o.handle(ctx, conn)
+	}
+}
+
+func listenHostsForHost(host string) []string {
+	switch strings.ToLower(strings.TrimSpace(host)) {
+	case "dual", "both":
+		return []string{"::", "0.0.0.0"}
+	default:
+		return []string{host}
+	}
+}
+
+func ListenAddressesForHost(host string, port int) []string {
+	hosts := listenHostsForHost(host)
+	addrs := make([]string, 0, len(hosts))
+	for _, host := range hosts {
+		addrs = append(addrs, net.JoinHostPort(host, strconv.Itoa(port)))
+	}
+	return addrs
 }
 
 func (o *ConnectionObserver) handle(ctx context.Context, client net.Conn) {

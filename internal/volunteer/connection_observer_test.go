@@ -112,6 +112,15 @@ func TestTCPNetworkForHost(t *testing.T) {
 	}
 }
 
+func TestListenAddressesForHost(t *testing.T) {
+	got := ListenAddressesForHost("dual", 443)
+	want := []string{"[::]:443", "0.0.0.0:443"}
+
+	if strings.Join(got, ",") != strings.Join(want, ",") {
+		t.Fatalf("ListenAddressesForHost dual = %v, want %v", got, want)
+	}
+}
+
 func waitForLog(t *testing.T, output *syncBuffer, needle string) {
 	t.Helper()
 	deadline := time.Now().Add(2 * time.Second)

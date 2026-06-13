@@ -43,9 +43,11 @@ go run ./cmd/volunteer \
   -xray /path/to/xray
 ```
 
-By default, the volunteer listens on IPv6 (`::`) and advertises the first global IPv6 address it can find. Pass `-public-host` and, if needed, `-listen-host` when using a DNS name, IPv4 address, or manually chosen IPv6 address. A global IPv6 address still needs inbound firewall/router rules that allow clients to reach the volunteer port.
+By default, the volunteer listens on IPv6 (`::`) and advertises the first global IPv6 address it can find. Pass `-public-host` and, if needed, `-listen-host` when using a DNS name, IPv4 address, or manually chosen IPv6 address. Use `-listen-host dual` to listen on both IPv6 and IPv4 in one volunteer process. A global IPv6 address still needs inbound firewall/router rules that allow clients to reach the volunteer port.
 
 The volunteer prints colored client connection events by default: green when a client TCP connection opens, red when it closes, plus the client IP, duration, and byte counts. Pass `-connection-log=false` to let Xray bind the public port directly without the observer.
+
+The broker currently advertises one `public_host` per volunteer. For both IPv4 and IPv6 client discovery, advertise a DNS name with both A and AAAA records, or run separate volunteer registrations until the broker supports multiple public endpoints per relay.
 
 The volunteer command expects an `xray` binary that supports `xray x25519` and `xray run -config`.
 

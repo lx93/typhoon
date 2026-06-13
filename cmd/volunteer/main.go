@@ -27,7 +27,7 @@ func main() {
 	flag.StringVar(&cfg.BrokerURL, "broker", "http://localhost:8080", "broker base URL")
 	flag.StringVar(&cfg.RegistrationToken, "registration-token", os.Getenv("TYPHOON_VOLUNTEER_TOKEN"), "volunteer registration token")
 	flag.StringVar(&cfg.XrayPath, "xray", "xray", "path to xray binary")
-	flag.StringVar(&cfg.ListenHost, "listen-host", "::", "local listen host")
+	flag.StringVar(&cfg.ListenHost, "listen-host", "::", "local listen host; use dual to listen on both IPv6 and IPv4 when connection logging is enabled")
 	flag.IntVar(&cfg.ListenPort, "listen-port", 443, "local listen port")
 	flag.StringVar(&cfg.PublicHost, "public-host", "", "public hostname or IP clients can reach; defaults to this machine's first global IPv6 address")
 	flag.IntVar(&cfg.PublicPort, "public-port", 443, "public port clients can reach")
@@ -118,6 +118,9 @@ func (c cliConfig) Validate() error {
 	if c.HeartbeatInterval < 5*time.Second {
 		return fmt.Errorf("heartbeat-interval must be at least 5s")
 	}
+	if isDualListenHost(c.ListenHost) && (!c.ConnectionLog || c.PrintConfigOnly || c.SkipXrayRun) {
+		return fmt.Errorf("listen-host=dual requires connection-log=true and a running xray process")
+	}
 	return nil
 }
 
@@ -187,7 +190,7 @@ func run(cfg cliConfig) error {
 			slog.Info(
 				"started connection observer",
 				"listen",
-				fmt.Sprintf("%s:%d", cfg.ListenHost, cfg.ListenPort),
+				strings.Join(volunteer.ListenAddressesForHost(cfg.ListenHost, cfg.ListenPort), ","),
 				"target",
 				fmt.Sprintf("%s:%d", xrayCfg.ListenHost, xrayCfg.ListenPort),
 			)
@@ -237,6 +240,11 @@ func run(cfg cliConfig) error {
 			slog.Info("heartbeat ok", "id", desc.ID)
 		}
 	}
+}
+
+func isDualListenHost(host string) bool {
+	normalized := strings.ToLower(strings.TrimSpace(host))
+	return normalized == "dual" || normalized == "both"
 }
 
 type preparedRuntime struct {
