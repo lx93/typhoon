@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -29,7 +30,7 @@ type ConnectionObserver struct {
 
 func ReserveLoopbackTCPPort() (string, int, error) {
 	for _, host := range []string{"::1", "127.0.0.1"} {
-		listener, err := net.Listen("tcp", net.JoinHostPort(host, "0"))
+		listener, err := net.Listen(tcpNetworkForHost(host), net.JoinHostPort(host, "0"))
 		if err != nil {
 			continue
 		}
@@ -44,7 +45,7 @@ func (o *ConnectionObserver) Start(ctx context.Context) (<-chan error, error) {
 	if o.Output == nil {
 		o.Output = io.Discard
 	}
-	listener, err := net.Listen("tcp", net.JoinHostPort(o.ListenHost, strconv.Itoa(o.ListenPort)))
+	listener, err := net.Listen(tcpNetworkForHost(o.ListenHost), net.JoinHostPort(o.ListenHost, strconv.Itoa(o.ListenPort)))
 	if err != nil {
 		return nil, err
 	}
@@ -127,6 +128,18 @@ func splitAddress(addr string) (string, string) {
 		return addr, ""
 	}
 	return host, port
+}
+
+func tcpNetworkForHost(host string) string {
+	ip := net.ParseIP(strings.Trim(host, "[]"))
+	switch {
+	case ip == nil:
+		return "tcp"
+	case ip.To4() != nil:
+		return "tcp4"
+	default:
+		return "tcp6"
+	}
 }
 
 type countingWriter struct {

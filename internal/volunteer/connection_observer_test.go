@@ -90,6 +90,28 @@ func reserveTestPort(t *testing.T) (string, int) {
 	return "127.0.0.1", listener.Addr().(*net.TCPAddr).Port
 }
 
+func TestTCPNetworkForHost(t *testing.T) {
+	tests := []struct {
+		host string
+		want string
+	}{
+		{host: "::", want: "tcp6"},
+		{host: "::1", want: "tcp6"},
+		{host: "[2406:da14::1]", want: "tcp6"},
+		{host: "0.0.0.0", want: "tcp4"},
+		{host: "127.0.0.1", want: "tcp4"},
+		{host: "localhost", want: "tcp"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.host, func(t *testing.T) {
+			if got := tcpNetworkForHost(tt.host); got != tt.want {
+				t.Fatalf("tcpNetworkForHost(%q) = %q, want %q", tt.host, got, tt.want)
+			}
+		})
+	}
+}
+
 func waitForLog(t *testing.T, output *syncBuffer, needle string) {
 	t.Helper()
 	deadline := time.Now().Add(2 * time.Second)
