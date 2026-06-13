@@ -53,6 +53,9 @@ The generated config uses:
 - `dns_mode: hijack`, so sing-box installs tunnel DNS settings and intercepts
   port 53 DNS requests.
 - DNS servers detoured through the proxy.
+- `route_exclude_address` for literal relay IPs, so the client's own TCP
+  connection to the volunteer stays on the real network interface instead of
+  being routed back into the TUN.
 - VLESS Reality Vision outbound from the selected relay descriptor.
 - Route final set to the proxy outbound.
 

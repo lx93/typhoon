@@ -97,6 +97,22 @@ final class RelaySelectorTests: XCTestCase {
         XCTAssertTrue(json.contains("\"detour\" : \"proxy\""))
     }
 
+    func testBuildsSingBoxConfigWithIPv6RelayRouteExclusion() throws {
+        let descriptor = relay(id: "relay-1", publicHost: "2001:db8::443")
+        let json = try SingBoxConfiguration(relay: descriptor).encodedJSONString()
+
+        XCTAssertTrue(json.contains("\"route_exclude_address\" : ["))
+        XCTAssertTrue(json.contains("\"2001:db8::443\\/128\""))
+    }
+
+    func testBuildsSingBoxConfigWithIPv4RelayRouteExclusion() throws {
+        let descriptor = relay(id: "relay-1", publicHost: "203.0.113.10")
+        let json = try SingBoxConfiguration(relay: descriptor).encodedJSONString()
+
+        XCTAssertTrue(json.contains("\"route_exclude_address\" : ["))
+        XCTAssertTrue(json.contains("\"203.0.113.10\\/32\""))
+    }
+
     private func relay(
         id: String,
         publicHost: String = "volunteer.example.com",

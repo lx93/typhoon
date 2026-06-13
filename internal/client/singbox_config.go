@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
+	"strings"
 
 	"typhoon/internal/relay"
 )
@@ -41,6 +43,21 @@ func BuildSingBoxConfig(input SingBoxConfigInput) ([]byte, error) {
 		return nil, errors.New("mtu must be positive")
 	}
 
+	tunInbound := map[string]any{
+		"type":                     "tun",
+		"tag":                      "tun-in",
+		"address":                  []string{tunnelIPv4Address, tunnelIPv6Address},
+		"mtu":                      mtu,
+		"auto_route":               true,
+		"strict_route":             true,
+		"stack":                    "system",
+		"dns_mode":                 "hijack",
+		"endpoint_independent_nat": true,
+	}
+	if excludeAddress := relayRouteExcludeAddress(input.Relay.PublicHost); excludeAddress != "" {
+		tunInbound["route_exclude_address"] = []string{excludeAddress}
+	}
+
 	cfg := map[string]any{
 		"log": map[string]any{
 			"level":     "info",
@@ -51,17 +68,7 @@ func BuildSingBoxConfig(input SingBoxConfigInput) ([]byte, error) {
 			"final":   "dns-0",
 		},
 		"inbounds": []any{
-			map[string]any{
-				"type":                     "tun",
-				"tag":                      "tun-in",
-				"address":                  []string{tunnelIPv4Address, tunnelIPv6Address},
-				"mtu":                      mtu,
-				"auto_route":               true,
-				"strict_route":             true,
-				"stack":                    "system",
-				"dns_mode":                 "hijack",
-				"endpoint_independent_nat": true,
-			},
+			tunInbound,
 		},
 		"outbounds": []any{
 			map[string]any{
@@ -105,11 +112,23 @@ func BuildSingBoxConfig(input SingBoxConfigInput) ([]byte, error) {
 					"action":   "hijack-dns",
 				},
 			},
-			"final":                   "proxy",
+			"final": "proxy",
 		},
 	}
 
 	return json.MarshalIndent(cfg, "", "  ")
+}
+
+func relayRouteExcludeAddress(host string) string {
+	cleanHost := strings.TrimSuffix(strings.TrimPrefix(host, "["), "]")
+	ip := net.ParseIP(cleanHost)
+	if ip == nil {
+		return ""
+	}
+	if ip.To4() != nil {
+		return ip.String() + "/32"
+	}
+	return ip.String() + "/128"
 }
 
 func dnsServerObjects(servers []string) []any {

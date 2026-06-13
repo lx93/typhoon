@@ -33,7 +33,25 @@ public struct SingBoxConfiguration: Equatable, Sendable {
     }
 
     public func makeJSONObject() -> [String: Any] {
-        [
+        var tunInbound: [String: Any] = [
+            "type": "tun",
+            "tag": "tun-in",
+            "address": [
+                tunnelIPv4Address,
+                tunnelIPv6Address
+            ],
+            "mtu": mtu,
+            "auto_route": true,
+            "strict_route": true,
+            "stack": "system",
+            "dns_mode": "hijack",
+            "endpoint_independent_nat": true
+        ]
+        if let excludeAddress = Self.relayRouteExcludeAddress(for: relay.publicHost) {
+            tunInbound["route_exclude_address"] = [excludeAddress]
+        }
+
+        return [
             "log": [
                 "level": "info",
                 "timestamp": true
@@ -50,20 +68,7 @@ public struct SingBoxConfiguration: Equatable, Sendable {
                 "final": "dns-0"
             ],
             "inbounds": [
-                [
-                    "type": "tun",
-                    "tag": "tun-in",
-                    "address": [
-                        tunnelIPv4Address,
-                        tunnelIPv6Address
-                    ],
-                    "mtu": mtu,
-                    "auto_route": true,
-                    "strict_route": true,
-                    "stack": "system",
-                    "dns_mode": "hijack",
-                    "endpoint_independent_nat": true
-                ] as [String: Any]
+                tunInbound
             ],
             "outbounds": [
                 [
@@ -110,5 +115,38 @@ public struct SingBoxConfiguration: Equatable, Sendable {
                 "final": "proxy"
             ]
         ]
+    }
+
+    private static func relayRouteExcludeAddress(for host: String) -> String? {
+        let cleanHost = host.removingIPv6Brackets()
+        if cleanHost.isIPv4Literal {
+            return "\(cleanHost)/32"
+        }
+        if cleanHost.contains(":") {
+            return "\(cleanHost)/128"
+        }
+        return nil
+    }
+}
+
+private extension String {
+    func removingIPv6Brackets() -> String {
+        guard hasPrefix("["), hasSuffix("]") else {
+            return self
+        }
+        return String(dropFirst().dropLast())
+    }
+
+    var isIPv4Literal: Bool {
+        let octets = split(separator: ".", omittingEmptySubsequences: false)
+        guard octets.count == 4 else {
+            return false
+        }
+        return octets.allSatisfy { octet in
+            guard let value = Int(octet), (0...255).contains(value) else {
+                return false
+            }
+            return String(value) == String(octet)
+        }
     }
 }

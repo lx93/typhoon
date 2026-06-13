@@ -118,6 +118,8 @@ The adapter:
 
 - Generates VLESS Reality Vision client JSON from `SingBoxConfiguration`.
 - Lets libbox install and own the packet tunnel network settings.
+- Excludes literal relay IPs from the tunnel route so the transport connection
+  to the selected volunteer can bootstrap outside the VPN.
 - Uses a local TCP command-server port instead of libbox's default Unix socket, because iOS extension container paths are too long for `command.sock`.
 - Returns the packet tunnel file descriptor to libbox.
 - Stops the service cleanly when the VPN disconnects.

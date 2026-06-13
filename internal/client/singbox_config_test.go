@@ -64,3 +64,68 @@ func TestBuildSingBoxConfig(t *testing.T) {
 		t.Fatalf("expected TCP DNS through proxy, got %+v", dns0)
 	}
 }
+
+func TestBuildSingBoxConfigExcludesIPv6RelayFromTUNRoute(t *testing.T) {
+	now := time.Date(2026, 6, 11, 12, 0, 0, 0, time.UTC)
+	relay := validRelay(now)
+	relay.PublicHost = "2001:db8::443"
+
+	cfg, err := BuildSingBoxConfig(SingBoxConfigInput{Relay: relay})
+	if err != nil {
+		t.Fatalf("build sing-box config: %v", err)
+	}
+
+	var decoded map[string]any
+	if err := json.Unmarshal(cfg, &decoded); err != nil {
+		t.Fatalf("config should be valid JSON: %v", err)
+	}
+
+	inbounds := decoded["inbounds"].([]any)
+	tun := inbounds[0].(map[string]any)
+	excluded := tun["route_exclude_address"].([]any)
+	if len(excluded) != 1 || excluded[0] != "2001:db8::443/128" {
+		t.Fatalf("expected IPv6 relay route exclusion, got %+v", excluded)
+	}
+}
+
+func TestBuildSingBoxConfigExcludesIPv4RelayFromTUNRoute(t *testing.T) {
+	now := time.Date(2026, 6, 11, 12, 0, 0, 0, time.UTC)
+	relay := validRelay(now)
+	relay.PublicHost = "203.0.113.10"
+
+	cfg, err := BuildSingBoxConfig(SingBoxConfigInput{Relay: relay})
+	if err != nil {
+		t.Fatalf("build sing-box config: %v", err)
+	}
+
+	var decoded map[string]any
+	if err := json.Unmarshal(cfg, &decoded); err != nil {
+		t.Fatalf("config should be valid JSON: %v", err)
+	}
+
+	inbounds := decoded["inbounds"].([]any)
+	tun := inbounds[0].(map[string]any)
+	excluded := tun["route_exclude_address"].([]any)
+	if len(excluded) != 1 || excluded[0] != "203.0.113.10/32" {
+		t.Fatalf("expected IPv4 relay route exclusion, got %+v", excluded)
+	}
+}
+
+func TestBuildSingBoxConfigDoesNotExcludeHostnameRelay(t *testing.T) {
+	now := time.Date(2026, 6, 11, 12, 0, 0, 0, time.UTC)
+	cfg, err := BuildSingBoxConfig(SingBoxConfigInput{Relay: validRelay(now)})
+	if err != nil {
+		t.Fatalf("build sing-box config: %v", err)
+	}
+
+	var decoded map[string]any
+	if err := json.Unmarshal(cfg, &decoded); err != nil {
+		t.Fatalf("config should be valid JSON: %v", err)
+	}
+
+	inbounds := decoded["inbounds"].([]any)
+	tun := inbounds[0].(map[string]any)
+	if _, ok := tun["route_exclude_address"]; ok {
+		t.Fatalf("hostname relay should not get a literal route exclusion: %+v", tun)
+	}
+}
