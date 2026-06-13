@@ -41,6 +41,7 @@ func main() {
 	flag.IntVar(&cfg.MaxMbps, "max-mbps", 20, "advertised max Mbps")
 	flag.DurationVar(&cfg.HeartbeatInterval, "heartbeat-interval", 30*time.Second, "broker heartbeat interval")
 	flag.StringVar(&cfg.ConfigOut, "config-out", "", "write generated Xray config to this path")
+	flag.BoolVar(&cfg.ConnectionLog, "connection-log", true, "print colored client connect and disconnect events")
 	flag.BoolVar(&cfg.PrintConfigOnly, "print-config-only", false, "print generated Xray config and exit")
 	flag.BoolVar(&cfg.SkipXrayRun, "skip-xray-run", false, "register and heartbeat without launching xray")
 	flag.Parse()
@@ -78,6 +79,7 @@ type cliConfig struct {
 	MaxMbps           int
 	HeartbeatInterval time.Duration
 	ConfigOut         string
+	ConnectionLog     bool
 	PrintConfigOnly   bool
 	SkipXrayRun       bool
 }
@@ -123,7 +125,17 @@ func run(cfg cliConfig) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	prepared, err := prepareRuntime(cfg)
+	xrayCfg := cfg
+	if cfg.ConnectionLog && !cfg.SkipXrayRun && !cfg.PrintConfigOnly {
+		targetHost, targetPort, err := volunteer.ReserveLoopbackTCPPort()
+		if err != nil {
+			return err
+		}
+		xrayCfg.ListenHost = targetHost
+		xrayCfg.ListenPort = targetPort
+	}
+
+	prepared, err := prepareRuntime(xrayCfg)
 	if err != nil {
 		return err
 	}
@@ -144,6 +156,7 @@ func run(cfg cliConfig) error {
 
 	var xrayCmd *exec.Cmd
 	var errCh <-chan error
+	var observerErrCh <-chan error
 	if !cfg.SkipXrayRun {
 		xrayCmd = exec.CommandContext(ctx, cfg.XrayPath, "run", "-config", configPath)
 		xrayCmd.Stdout = os.Stdout
@@ -157,6 +170,28 @@ func run(cfg cliConfig) error {
 		}()
 		errCh = waitCh
 		slog.Info("started xray", "pid", xrayCmd.Process.Pid)
+
+		if cfg.ConnectionLog {
+			observer := &volunteer.ConnectionObserver{
+				ListenHost: cfg.ListenHost,
+				ListenPort: cfg.ListenPort,
+				TargetHost: xrayCfg.ListenHost,
+				TargetPort: xrayCfg.ListenPort,
+				Output:     os.Stdout,
+			}
+			observerErrCh, err = observer.Start(ctx)
+			if err != nil {
+				stopProcess(xrayCmd, errCh)
+				return fmt.Errorf("start connection observer: %w", err)
+			}
+			slog.Info(
+				"started connection observer",
+				"listen",
+				fmt.Sprintf("%s:%d", cfg.ListenHost, cfg.ListenPort),
+				"target",
+				fmt.Sprintf("%s:%d", xrayCfg.ListenHost, xrayCfg.ListenPort),
+			)
+		}
 	}
 
 	desc, err := register(ctx, cfg, prepared)
@@ -183,6 +218,17 @@ func run(cfg cliConfig) error {
 				return fmt.Errorf("xray exited")
 			}
 			return fmt.Errorf("xray exited: %w", err)
+		case err, ok := <-observerErrCh:
+			if !ok {
+				observerErrCh = nil
+				continue
+			}
+			if err != nil {
+				if xrayCmd != nil {
+					stopProcess(xrayCmd, errCh)
+				}
+				return fmt.Errorf("connection observer stopped: %w", err)
+			}
 		case <-ticker.C:
 			if err := heartbeat(ctx, cfg, desc.ID); err != nil {
 				slog.Warn("heartbeat failed", "error", err)

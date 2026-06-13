@@ -33,7 +33,7 @@ The broker does:
 
 ### Volunteer CLI
 
-The volunteer CLI runs on desktop systems. For MVP it starts an Xray-core inbound listener and registers the relay with the broker. It defaults to an IPv6 listener and auto-advertises the first global IPv6 address it can find unless the operator supplies `-public-host`.
+The volunteer CLI runs on desktop systems. For MVP it starts an Xray-core inbound listener and registers the relay with the broker. It defaults to an IPv6 listener and auto-advertises the first global IPv6 address it can find unless the operator supplies `-public-host`. The CLI also wraps Xray with a local TCP observer by default so it can print client connect and disconnect events without changing the broker descriptor.
 
 The CLI produces an Xray server config with:
 
