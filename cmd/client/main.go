@@ -118,6 +118,7 @@ func runConnect(args []string) error {
 type commonConfig struct {
 	BrokerURL string
 	Limit     int
+	MTU       int
 }
 
 func parseCommonFlags(name string, args []string) (commonConfig, error) {
@@ -133,6 +134,7 @@ func parseCommonFlags(name string, args []string) (commonConfig, error) {
 func addCommonFlags(fs *flag.FlagSet, cfg *commonConfig) {
 	fs.StringVar(&cfg.BrokerURL, "broker", "http://localhost:8080", "broker base URL")
 	fs.IntVar(&cfg.Limit, "limit", 5, "relay candidate limit")
+	fs.IntVar(&cfg.MTU, "mtu", 0, "TUN MTU; defaults to sing-box config default")
 }
 
 func fetchSelectedRelay(ctx context.Context, cfg commonConfig) (relay.Descriptor, []byte, error) {
@@ -150,7 +152,7 @@ func fetchSelectedRelay(ctx context.Context, cfg commonConfig) (relay.Descriptor
 		return relay.Descriptor{}, nil, err
 	}
 
-	configJSON, err := client.BuildSingBoxConfig(client.SingBoxConfigInput{Relay: selected})
+	configJSON, err := client.BuildSingBoxConfig(client.SingBoxConfigInput{Relay: selected, MTU: cfg.MTU})
 	if err != nil {
 		return relay.Descriptor{}, nil, err
 	}
@@ -214,6 +216,9 @@ Commands:
   check    Fetch relay candidates and print the selected usable relay.
   config   Generate a sing-box TUN client config for the selected relay.
   connect  Generate a config and run sing-box to route traffic through Typhoon.
+
+Common flags:
+  -mtu     Override the generated TUN MTU, e.g. -mtu 1280 for IPv6 path tests.
 
 `, program)
 }
