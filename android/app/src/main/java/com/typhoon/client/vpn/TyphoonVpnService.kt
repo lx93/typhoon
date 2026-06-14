@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.VpnService
 import android.os.Build
-import android.os.ParcelFileDescriptor
 import androidx.core.app.NotificationCompat
 import com.typhoon.client.MainActivity
 import com.typhoon.client.R
@@ -16,6 +15,7 @@ import com.typhoon.client.config.AppConfig
 import com.typhoon.client.model.RelayDescriptor
 import com.typhoon.client.model.RelaySelector
 import com.typhoon.client.net.BrokerClient
+import com.typhoon.client.net.RelayReachability
 import com.typhoon.client.net.SingBoxConfiguration
 import com.typhoon.client.state.ConnectionStatus
 import com.typhoon.client.state.TyphoonStatusStore
@@ -25,14 +25,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class TyphoonVpnService : VpnService() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val relaySelector = RelaySelector()
     private var connectJob: Job? = null
     private var engine: ProxyEngine? = null
-    private var tunFd: ParcelFileDescriptor? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -103,18 +101,24 @@ class TyphoonVpnService : VpnService() {
         for (relay in candidates) {
             try {
                 TyphoonStatusStore.appendLog("trying relay ${relay.id} at ${relay.publicHost}:${relay.publicPort}")
+                TyphoonStatusStore.appendLog("checking relay TCP reachability")
+                try {
+                    RelayReachability.checkTcp(relay)
+                } catch (error: Throwable) {
+                    throw IllegalStateException(
+                        "Relay ${relay.publicHost}:${relay.publicPort} is not reachable from this Android device. " +
+                            "If this is the emulator, use an IPv4/dual-stack volunteer endpoint or an IPv6-capable emulator network.",
+                        error,
+                    )
+                }
                 val config = SingBoxConfiguration(relay = relay).encodedJsonString()
-                val fd = establishTunnel()
-                tunFd = fd
                 val proxyEngine = ProxyEngineFactory.create()
                 proxyEngine.start(
                     relay = relay,
                     configJson = config,
-                    tunFd = fd,
                     vpnService = this,
                 )
                 engine = proxyEngine
-                tunFd = fd
                 return relay
             } catch (error: Throwable) {
                 lastError = error
@@ -124,22 +128,6 @@ class TyphoonVpnService : VpnService() {
         }
 
         throw IllegalStateException("All relay connection attempts failed. Last error: ${lastError?.message ?: "unknown"}")
-    }
-
-    private suspend fun establishTunnel(): ParcelFileDescriptor = withContext(Dispatchers.IO) {
-        Builder()
-            .setSession(AppConfig.VPN_SESSION_NAME)
-            .setMtu(1500)
-            .addAddress("172.19.0.1", 30)
-            .addAddress("fdfe:dcba:9876::1", 126)
-            .addDnsServer("1.1.1.1")
-            .addDnsServer("8.8.8.8")
-            .addRoute("0.0.0.0", 0)
-            .addRoute("::", 0)
-            .allowFamily(android.system.OsConstants.AF_INET)
-            .allowFamily(android.system.OsConstants.AF_INET6)
-            .establish()
-            ?: throw IllegalStateException("Android did not return a VPN tunnel file descriptor.")
     }
 
     private fun disconnect() {
@@ -154,13 +142,6 @@ class TyphoonVpnService : VpnService() {
     private fun cleanupActiveTunnel() {
         engine?.stop()
         engine = null
-        tunFd.closeQuietly()
-        tunFd = null
-    }
-
-    private fun ParcelFileDescriptor?.closeQuietly() {
-        if (this == null) return
-        runCatching { close() }
     }
 
     private fun createNotificationChannel() {

@@ -17,6 +17,9 @@ ios/ThirdParty/Libbox.xcframework/
 android/ThirdParty/*.aar
 android/app/libs/*.aar
 android/.gradle/
+android/.idea/
+android/.kotlin/
+android/local.properties
 android/app/build/
 android/build/
 
