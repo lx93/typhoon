@@ -27,7 +27,7 @@ func main() {
 	flag.StringVar(&cfg.BrokerURL, "broker", "http://localhost:8080", "broker base URL")
 	flag.StringVar(&cfg.RegistrationToken, "registration-token", os.Getenv("TYPHOON_VOLUNTEER_TOKEN"), "volunteer registration token")
 	flag.StringVar(&cfg.XrayPath, "xray", "xray", "path to xray binary")
-	flag.StringVar(&cfg.ListenHost, "listen-host", "::", "local listen host; use dual to listen on both IPv6 and IPv4 when connection logging is enabled")
+	flag.StringVar(&cfg.ListenHost, "listen-host", "::", "local listen host; with connection logging, :: listens on both IPv6 and IPv4 through the observer")
 	flag.IntVar(&cfg.ListenPort, "listen-port", 443, "local listen port")
 	flag.StringVar(&cfg.PublicHost, "public-host", "", "public hostname or IP clients can reach; defaults to this machine's first global IPv6 address")
 	flag.IntVar(&cfg.PublicPort, "public-port", 443, "public port clients can reach")
@@ -193,6 +193,8 @@ func run(cfg cliConfig) error {
 				strings.Join(volunteer.ListenAddressesForHost(cfg.ListenHost, cfg.ListenPort), ","),
 				"target",
 				fmt.Sprintf("%s:%d", xrayCfg.ListenHost, xrayCfg.ListenPort),
+				"note",
+				"observer owns the public listen port and forwards to xray",
 			)
 		}
 	}

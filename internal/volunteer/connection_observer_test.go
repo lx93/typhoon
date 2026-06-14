@@ -12,20 +12,7 @@ import (
 )
 
 func TestConnectionObserverLogsAndForwardsTraffic(t *testing.T) {
-	targetListener, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("listen target: %v", err)
-	}
-	defer targetListener.Close()
-
-	go func() {
-		conn, err := targetListener.Accept()
-		if err != nil {
-			return
-		}
-		defer conn.Close()
-		_, _ = io.Copy(conn, conn)
-	}()
+	targetListener := startEchoServer(t)
 
 	listenHost, listenPort := reserveTestPort(t)
 	targetPort := targetListener.Addr().(*net.TCPAddr).Port
@@ -80,6 +67,98 @@ func TestConnectionObserverLogsAndForwardsTraffic(t *testing.T) {
 	}
 }
 
+func TestConnectionObserverWildcardForwardsIPv4AndIPv6Loopback(t *testing.T) {
+	if !supportsIPv6Loopback() {
+		t.Skip("IPv6 loopback is not available")
+	}
+
+	targetListener := startEchoServer(t)
+
+	_, listenPort := reserveTestPort(t)
+	targetPort := targetListener.Addr().(*net.TCPAddr).Port
+	var output syncBuffer
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	observer := &ConnectionObserver{
+		ListenHost: "::",
+		ListenPort: listenPort,
+		TargetHost: "127.0.0.1",
+		TargetPort: targetPort,
+		Output:     &output,
+	}
+	errCh, err := observer.Start(ctx)
+	if err != nil {
+		t.Fatalf("start observer: %v", err)
+	}
+
+	for _, host := range []string{"127.0.0.1", "::1"} {
+		t.Run(host, func(t *testing.T) {
+			conn, err := net.Dial("tcp", net.JoinHostPort(host, strconv.Itoa(listenPort)))
+			if err != nil {
+				t.Fatalf("dial observer: %v", err)
+			}
+			defer conn.Close()
+
+			if _, err := conn.Write([]byte("hello")); err != nil {
+				t.Fatalf("write through observer: %v", err)
+			}
+			buf := make([]byte, 5)
+			if _, err := io.ReadFull(conn, buf); err != nil {
+				t.Fatalf("read echo through observer: %v", err)
+			}
+			if string(buf) != "hello" {
+				t.Fatalf("expected echo %q, got %q", "hello", string(buf))
+			}
+		})
+	}
+
+	cancel()
+	select {
+	case err := <-errCh:
+		if err != nil {
+			t.Fatalf("observer returned error after cancel: %v", err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("observer did not stop after cancel")
+	}
+}
+
+func startEchoServer(t *testing.T) net.Listener {
+	t.Helper()
+	targetListener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("listen target: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = targetListener.Close()
+	})
+
+	go func() {
+		for {
+			conn, err := targetListener.Accept()
+			if err != nil {
+				return
+			}
+			go func() {
+				defer conn.Close()
+				_, _ = io.Copy(conn, conn)
+			}()
+		}
+	}()
+
+	return targetListener
+}
+
+func supportsIPv6Loopback() bool {
+	listener, err := net.Listen("tcp6", "[::1]:0")
+	if err != nil {
+		return false
+	}
+	_ = listener.Close()
+	return true
+}
+
 func reserveTestPort(t *testing.T) (string, int) {
 	t.Helper()
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
@@ -113,11 +192,25 @@ func TestTCPNetworkForHost(t *testing.T) {
 }
 
 func TestListenAddressesForHost(t *testing.T) {
-	got := ListenAddressesForHost("dual", 443)
-	want := []string{"[::]:443", "0.0.0.0:443"}
+	tests := []struct {
+		host string
+		want []string
+	}{
+		{host: "::", want: []string{"[::]:443", "0.0.0.0:443"}},
+		{host: "dual", want: []string{"[::]:443", "0.0.0.0:443"}},
+		{host: "both", want: []string{"[::]:443", "0.0.0.0:443"}},
+		{host: "127.0.0.1", want: []string{"127.0.0.1:443"}},
+		{host: "::1", want: []string{"[::1]:443"}},
+		{host: "0.0.0.0", want: []string{"0.0.0.0:443"}},
+	}
 
-	if strings.Join(got, ",") != strings.Join(want, ",") {
-		t.Fatalf("ListenAddressesForHost dual = %v, want %v", got, want)
+	for _, tt := range tests {
+		t.Run(tt.host, func(t *testing.T) {
+			got := ListenAddressesForHost(tt.host, 443)
+			if strings.Join(got, ",") != strings.Join(tt.want, ",") {
+				t.Fatalf("ListenAddressesForHost(%q) = %v, want %v", tt.host, got, tt.want)
+			}
+		})
 	}
 }
 

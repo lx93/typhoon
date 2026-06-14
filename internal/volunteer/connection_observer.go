@@ -100,7 +100,7 @@ func (o *ConnectionObserver) serve(ctx context.Context, listener net.Listener, e
 
 func listenHostsForHost(host string) []string {
 	switch strings.ToLower(strings.TrimSpace(host)) {
-	case "dual", "both":
+	case "::", "dual", "both":
 		return []string{"::", "0.0.0.0"}
 	default:
 		return []string{host}
