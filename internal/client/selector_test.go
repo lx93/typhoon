@@ -89,6 +89,49 @@ func TestSelectRelayPrefersIPv6Relay(t *testing.T) {
 	}
 }
 
+func TestSelectRelayForFamilyCanPreferIPv4Relay(t *testing.T) {
+	now := time.Date(2026, 6, 11, 12, 0, 0, 0, time.UTC)
+	ipv4 := validRelay(now)
+	ipv4.ID = "ipv4"
+	ipv4.PublicHost = "203.0.113.10"
+
+	ipv6 := validRelay(now)
+	ipv6.ID = "ipv6"
+	ipv6.PublicHost = "2001:db8::443"
+
+	selected, err := SelectRelayForFamily(relay.ListResponse{
+		ServerTime: now,
+		Relays:     []relay.Descriptor{ipv6, ipv4},
+	}, RelayFamilyIPv4)
+	if err != nil {
+		t.Fatalf("select relay: %v", err)
+	}
+	if selected.ID != "ipv4" {
+		t.Fatalf("expected ipv4 relay, got %q", selected.ID)
+	}
+}
+
+func TestSelectRelayForFamilyRequiresMatchingFamily(t *testing.T) {
+	now := time.Date(2026, 6, 11, 12, 0, 0, 0, time.UTC)
+	ipv6 := validRelay(now)
+	ipv6.PublicHost = "2001:db8::443"
+
+	_, err := SelectRelayForFamily(relay.ListResponse{
+		ServerTime: now,
+		Relays:     []relay.Descriptor{ipv6},
+	}, RelayFamilyIPv4)
+	if !errors.Is(err, ErrNoUsableRelay) {
+		t.Fatalf("expected ErrNoUsableRelay, got %v", err)
+	}
+}
+
+func TestParseRelayFamilyRejectsUnknownValue(t *testing.T) {
+	_, err := ParseRelayFamily("fast")
+	if err == nil {
+		t.Fatal("expected unknown relay family to fail")
+	}
+}
+
 func validRelay(now time.Time) relay.Descriptor {
 	return relay.Descriptor{
 		ID:               "relay_123",

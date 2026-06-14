@@ -16,6 +16,11 @@ Likely implementation choices:
 - A tun2socks-style bridge for TCP/UDP packets.
 - An Xray-compatible client core for VLESS Reality Vision.
 
+The initial Android scaffold lives in `android/`. It includes a Kotlin/Compose
+host app, visible broker URL entry, a one-button connect/disconnect flow,
+broker relay selection, sing-box config generation, and a `VpnService` boundary
+for the embedded Android libbox adapter.
+
 ## iOS
 
 Use `NetworkExtension` with a packet tunnel provider.

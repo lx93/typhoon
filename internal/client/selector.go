@@ -9,7 +9,19 @@ import (
 
 var ErrNoUsableRelay = errors.New("no usable relay")
 
+type RelayFamily string
+
+const (
+	RelayFamilyAuto RelayFamily = "auto"
+	RelayFamilyIPv4 RelayFamily = "ipv4"
+	RelayFamilyIPv6 RelayFamily = "ipv6"
+)
+
 func SelectRelay(resp relay.ListResponse) (relay.Descriptor, error) {
+	return SelectRelayForFamily(resp, RelayFamilyAuto)
+}
+
+func SelectRelayForFamily(resp relay.ListResponse, family RelayFamily) (relay.Descriptor, error) {
 	now := resp.ServerTime
 	if now.IsZero() {
 		now = time.Now()
@@ -21,18 +33,43 @@ func SelectRelay(resp relay.ListResponse) (relay.Descriptor, error) {
 		if !IsUsableRelay(candidate, now) {
 			continue
 		}
-		if relay.IsIPv6Host(candidate.PublicHost) {
-			return candidate, nil
-		}
-		if !hasFallback {
-			fallback = candidate
-			hasFallback = true
+		isIPv6 := relay.IsIPv6Host(candidate.PublicHost)
+		switch family {
+		case RelayFamilyIPv4:
+			if !isIPv6 {
+				return candidate, nil
+			}
+		case RelayFamilyIPv6:
+			if isIPv6 {
+				return candidate, nil
+			}
+		default:
+			if isIPv6 {
+				return candidate, nil
+			}
+			if !hasFallback {
+				fallback = candidate
+				hasFallback = true
+			}
 		}
 	}
 	if hasFallback {
 		return fallback, nil
 	}
 	return relay.Descriptor{}, ErrNoUsableRelay
+}
+
+func ParseRelayFamily(value string) (RelayFamily, error) {
+	switch RelayFamily(value) {
+	case "", RelayFamilyAuto:
+		return RelayFamilyAuto, nil
+	case RelayFamilyIPv4:
+		return RelayFamilyIPv4, nil
+	case RelayFamilyIPv6:
+		return RelayFamilyIPv6, nil
+	default:
+		return "", errors.New("relay-family must be one of: auto, ipv4, ipv6")
+	}
 }
 
 func IsUsableRelay(candidate relay.Descriptor, now time.Time) bool {

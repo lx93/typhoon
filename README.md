@@ -20,6 +20,7 @@ cmd/broker/          Broker HTTP API.
 cmd/volunteer/       Volunteer CLI for Xray-backed relay registration.
 docs/                Architecture, API, mobile, and rollout notes.
 ios/                 iOS VPN client scaffold and shared Swift package.
+android/             Android VPN client scaffold with Compose UI and VpnService.
 internal/broker/     Broker store and HTTP handlers.
 internal/relay/      Shared relay descriptor models.
 internal/volunteer/  Xray config generation helpers.

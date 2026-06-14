@@ -119,6 +119,7 @@ type commonConfig struct {
 	BrokerURL string
 	Limit     int
 	MTU       int
+	Family    string
 }
 
 func parseCommonFlags(name string, args []string) (commonConfig, error) {
@@ -135,6 +136,7 @@ func addCommonFlags(fs *flag.FlagSet, cfg *commonConfig) {
 	fs.StringVar(&cfg.BrokerURL, "broker", "http://localhost:8080", "broker base URL")
 	fs.IntVar(&cfg.Limit, "limit", 5, "relay candidate limit")
 	fs.IntVar(&cfg.MTU, "mtu", 0, "TUN MTU; defaults to sing-box config default")
+	fs.StringVar(&cfg.Family, "relay-family", string(client.RelayFamilyAuto), "relay address family: auto, ipv4, or ipv6")
 }
 
 func fetchSelectedRelay(ctx context.Context, cfg commonConfig) (relay.Descriptor, []byte, error) {
@@ -144,7 +146,12 @@ func fetchSelectedRelay(ctx context.Context, cfg commonConfig) (relay.Descriptor
 		return relay.Descriptor{}, nil, err
 	}
 
-	selected, err := client.SelectRelay(resp)
+	family, err := client.ParseRelayFamily(cfg.Family)
+	if err != nil {
+		return relay.Descriptor{}, nil, err
+	}
+
+	selected, err := client.SelectRelayForFamily(resp, family)
 	if err != nil {
 		if errors.Is(err, client.ErrNoUsableRelay) {
 			return relay.Descriptor{}, nil, fmt.Errorf("no usable relay returned by broker")
@@ -218,7 +225,8 @@ Commands:
   connect  Generate a config and run sing-box to route traffic through Typhoon.
 
 Common flags:
-  -mtu     Override the generated TUN MTU, e.g. -mtu 1280 for IPv6 path tests.
+  -mtu            Override the generated TUN MTU, e.g. -mtu 1280 for IPv6 path tests.
+  -relay-family   Select relay family: auto, ipv4, or ipv6.
 
 `, program)
 }
